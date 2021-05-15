@@ -31,6 +31,7 @@ def create_app(test_config=None):
     '''
     @TODO: Use the after_request decorator to set Access-Control-Allow
     '''
+
     @app.after_request
     def after_request(response):
         response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,true')
@@ -43,7 +44,7 @@ def create_app(test_config=None):
     for all available categories.
     '''
 
-    @app.route('/categories/', methods=['GET'])
+    @app.route('/categories', methods=['GET'])
     def get_categories():
         categories = [category.type for category in Category.query.all()]
 
@@ -69,6 +70,9 @@ def create_app(test_config=None):
         # 10 questions
         questions = Question.query.all()
         selections = get_pagenation(request, questions)
+        if not len(selections):
+            abort(404)
+
         categories = [category.type for category in Category.query.all()]
         return jsonify({
             'questions': selections,
@@ -132,7 +136,8 @@ def create_app(test_config=None):
         )
         try:
             question.insert()
-        except:
+        except BaseException as e:
+            print(e)
             abort(500)
 
         return jsonify({
@@ -153,6 +158,7 @@ def create_app(test_config=None):
     @app.route('/questions/search', methods=['POST'])
     def search_questions():
         body = request.get_json()
+
         search_term = body.get('searchTerm', '')
         questions = Question.query.filter(Question.question.ilike(f'%{search_term}%')).all()
         selections = get_pagenation(request, questions)
@@ -165,7 +171,6 @@ def create_app(test_config=None):
         })
 
     '''
-    @TODO: 
     Create a GET endpoint to get questions based on category. 
 
     TEST: In the "List" tab / main screen, clicking on one of the 
@@ -191,7 +196,6 @@ def create_app(test_config=None):
         })
 
     '''
-    @TODO: 
     Create a POST endpoint to get questions to play the quiz. 
     This endpoint should take category and previous question parameters 
     and return a random questions within the given category, 
@@ -202,10 +206,9 @@ def create_app(test_config=None):
     and shown whether they were correct or not. 
     '''
 
-    @app.route('/quizzes', methods=['GET', 'POST'])
+    @app.route('/quizzes', methods=['POST'])
     def play_quiz():
         body = request.get_json()
-        print(body)
         previous_questions = body.get('previous_questions')
         quiz_category_id = body.get('quiz_category').get('id', 0)
         category = body.get('quiz_category').get('type')
@@ -236,10 +239,10 @@ def create_app(test_config=None):
         })
 
     '''
-    @TODO: 
     Create error handlers for all expected errors 
     including 404 and 422. 
     '''
+
     @app.errorhandler(404)
     def not_found(error):
         print(error)
@@ -257,6 +260,22 @@ def create_app(test_config=None):
             "error": 422,
             "message": "Unprocessable entity"
         }), 422
+
+    @app.errorhandler(400)
+    def bad_request(error):
+        return jsonify({
+            "success": False,
+            "error": 400,
+            "message": "bad request"
+        }), 400
+
+    @app.errorhandler(500)
+    def bad_request(error):
+        return jsonify({
+            "success": False,
+            "error": 500,
+            "message": "internal server error"
+        }), 500
 
     return app
 
