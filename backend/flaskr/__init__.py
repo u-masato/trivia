@@ -1,6 +1,4 @@
-import os
 from flask import Flask, request, abort, jsonify
-from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import random
 
@@ -198,7 +196,7 @@ def create_app(test_config=None):
     def play_quiz():
         body = request.get_json()
         previous_questions = body.get('previous_questions')
-        quiz_category_id = body.get('quiz_category').get('id', 0)
+        quiz_category_id = int(body.get('quiz_category').get('id', 0)) + 1
         category = body.get('quiz_category').get('type')
 
         # case ALL
