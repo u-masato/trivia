@@ -23,14 +23,7 @@ def create_app(test_config=None):
     app = Flask(__name__)
     setup_db(app)
 
-    '''
-    @TODO: Set up CORS. Allow '*' for origins. Delete the sample route after completing the TODOs
-    '''
-    cors = CORS(app, resources={r"*": {"origins": "*"}})
-
-    '''
-    @TODO: Use the after_request decorator to set Access-Control-Allow
-    '''
+    CORS(app, resources={r"*": {"origins": "*"}})
 
     @app.after_request
     def after_request(response):
@@ -39,7 +32,6 @@ def create_app(test_config=None):
         return response
 
     '''
-    @TODO: 
     Create an endpoint to handle GET requests 
     for all available categories.
     '''
@@ -53,7 +45,6 @@ def create_app(test_config=None):
         })
 
     '''
-    @TODO: 
     Create an endpoint to handle GET requests for questions, 
     including pagination (every 10 questions). 
     This endpoint should return a list of questions, 
@@ -82,7 +73,6 @@ def create_app(test_config=None):
         })
 
     '''
-    @TODO: 
     Create an endpoint to DELETE question using a question ID. 
   
     TEST: When you click the trash icon next to a question, the question will be removed.
@@ -106,7 +96,6 @@ def create_app(test_config=None):
         })
 
     '''
-    @TODO: 
     Create an endpoint to POST a new question, 
     which will require the question and answer text, 
     category, and difficulty score.
@@ -145,7 +134,6 @@ def create_app(test_config=None):
         })
 
     '''
-    @TODO: 
     Create a POST endpoint to get questions based on a search term. 
     It should return any questions for whom the search term 
     is a substring of the question. 
