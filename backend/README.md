@@ -57,8 +57,10 @@ One note before you delve into your tasks: for each endpoint you are expected to
 ### ENDPOINT
 #### GET /categories
 - General:
-    - Return a list of quiz categories
-    - curl http://127.0.0.1:5000/categories
+    - Fetches a dictionary of categories in which the keys are the ids and the value is the corresponding string of the category
+    - Request Arguments: None
+    - Returns: An object with a single key, categories, that contains an object of id: category_string key:value pairs.
+    - curl `http://127.0.0.1:5000/categories`
   
 ```
 {
@@ -74,6 +76,8 @@ One note before you delve into your tasks: for each endpoint you are expected to
 ```
 #### GET /questions
 - General:
+  - Fetch all question objects
+  - Request Arguments: None
   - Return a list of a questions objects, total questions, current category and categories. 
   - Return are paginated in groups of 10. Include a request argument to choose page number, starting from 1.
   - `curl http://127.0.0.1:5000/questions?page=1`
@@ -167,6 +171,7 @@ One note before you delve into your tasks: for each endpoint you are expected to
     
 #### POST /questions
 - General:
+  - Sends a post request in order to add a new question
   - Create new a question using the submitted question, answer, 
     category, and difficulty score. 
     Return the id of the created question, question(text), answer, category and difficulty.
