@@ -79,19 +79,18 @@ def create_app(test_config=None):
 
     @app.route('/questions/<int:question_id>', methods=['DELETE'])
     def delete_question(question_id):
-        question = Question.query.filter_by(id=question_id).one_or_none()
-        if not question:
-            abort(404)
         try:
+            question = Question.query.filter_by(id=question_id).one_or_none()
+            if not question:
+                abort(404)
             question.delete()
-        except:
-            abort(500)
-        finally:
-            db.session.close()
 
-        return jsonify({
-            'success': True
-        })
+            return jsonify({
+                'success': True
+            })
+
+        except:
+            abort(422)
 
     '''
     Create an endpoint to POST a new question, 
@@ -105,31 +104,31 @@ def create_app(test_config=None):
 
     @app.route('/questions', methods=['POST'])
     def create_question():
-        body = request.get_json()
-        question = body.get('question')
-        answer = body.get('answer')
-        category = body.get('category')
-        difficulty = body.get('difficulty')
-
-        # bad parameter
-        if not all([question, answer, category, difficulty]):
-            abort(422)
-
-        question = Question(
-            question=question,
-            answer=answer,
-            category=category + 1,
-            difficulty=difficulty
-        )
         try:
-            question.insert()
-        except BaseException as e:
-            print(e)
-            abort(500)
+            body = request.get_json()
+            question = body.get('question')
+            answer = body.get('answer')
+            category = body.get('category')
+            difficulty = body.get('difficulty')
 
-        return jsonify({
-            'question': question.format()
-        })
+            # bad parameter
+            if not all([question, answer, category, difficulty]):
+                abort(422)
+
+            question = Question(
+                question=question,
+                answer=answer,
+                category=category + 1,
+                difficulty=difficulty
+            )
+            question.insert()
+
+            return jsonify({
+                'question': question.format()
+            })
+
+        except:
+            abort(422)
 
     '''
     Create a POST endpoint to get questions based on a search term. 
@@ -256,7 +255,7 @@ def create_app(test_config=None):
         }), 400
 
     @app.errorhandler(500)
-    def bad_request(error):
+    def server_error(error):
         return jsonify({
             "success": False,
             "error": 500,
