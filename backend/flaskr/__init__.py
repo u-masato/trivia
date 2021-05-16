@@ -16,6 +16,10 @@ def get_pagenation(request, selections):
     return current_questions[start:end]
 
 
+def get_categories_dict():
+    return {str(category.id): category.type for category in Category.query.all()}
+
+
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__)
@@ -36,10 +40,8 @@ def create_app(test_config=None):
 
     @app.route('/categories', methods=['GET'])
     def get_categories():
-        categories = [category.type for category in Category.query.all()]
-
         return jsonify({
-            'categories': categories
+            'categories': get_categories_dict()
         })
 
     '''
@@ -62,12 +64,11 @@ def create_app(test_config=None):
         if not len(selections):
             abort(404)
 
-        categories = [category.type for category in Category.query.all()]
         return jsonify({
             'questions': selections,
             'total_questions': len(Question.query.all()),
             'current_category': None,
-            'categories': categories
+            'categories': get_categories_dict()
         })
 
     '''
@@ -118,7 +119,7 @@ def create_app(test_config=None):
             question = Question(
                 question=question,
                 answer=answer,
-                category=category + 1,
+                category=category,
                 difficulty=difficulty
             )
             question.insert()
@@ -147,12 +148,11 @@ def create_app(test_config=None):
         search_term = body.get('searchTerm', '')
         questions = Question.query.filter(Question.question.ilike(f'%{search_term}%')).all()
         selections = get_pagenation(request, questions)
-        categories = [category.type for category in Category.query.all()]
         return jsonify({
             'questions': selections,
             'total_questions': len(Question.query.all()),
             'current_category': None,
-            'categories': categories
+            'categories': get_categories_dict()
         })
 
     '''
@@ -166,18 +166,16 @@ def create_app(test_config=None):
     @app.route('/categories/<int:category_id>/questions')
     def get_questions_by_category(category_id):
         # offset category_id
-        category_id += 1
         questions = Question.query.filter_by(category=category_id).all()
         if not questions:
             abort(404)
 
         selections = get_pagenation(request, questions)
-        categories = [category.type for category in Category.query.all()]
         return jsonify({
             'questions': selections,
             'total_questions': len(Question.query.all()),
             'current_category': Category.query.get(category_id).format(),
-            'categories': categories
+            'categories': get_categories_dict()
         })
 
     '''
@@ -195,7 +193,7 @@ def create_app(test_config=None):
     def play_quiz():
         body = request.get_json()
         previous_questions = body.get('previous_questions')
-        quiz_category_id = int(body.get('quiz_category').get('id', 0)) + 1
+        quiz_category_id = int(body.get('quiz_category').get('id', 0))
         category = body.get('quiz_category').get('type')
 
         # case ALL
