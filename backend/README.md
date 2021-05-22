@@ -22,6 +22,19 @@ This will install all of the required packages we selected within the `requireme
 
  - [Flask-CORS](https://flask-cors.readthedocs.io/en/latest/#) is the extension we'll use to handle cross origin requests from our frontend server. 
 
+
+5. **Configuration File**
+Create a configuration file to read the environment variables.
+Create a `.env` file and set `DB_PATH` for the database as follows
+
+```
+DB_HOST=127.0.0.1:5432
+DB_USER=
+DB_PASSWORD=
+DB_NAME=trivia
+DB_PATH=postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/${DB_NAME}
+```
+
 ### Database Setup
 With Postgres running, restore a database using the trivia.psql file provided. From the backend folder in terminal run:
 ```bash
